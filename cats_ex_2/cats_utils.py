@@ -32,7 +32,10 @@ def get_cats_info(path: str) -> List[Dict[str, str]]:
 
                     cat_id, name, age = parts
                     # Перевіряємо вік на число
-                    int(age)  # кидає ValueError, якщо не число
+                    try:
+                        int(age)  # кидає ValueError, якщо не число
+                    except ValueError:
+                        raise ValueError(f"Вік має бути числом: {age}")
 
                     cat = {
                         "id": cat_id,
