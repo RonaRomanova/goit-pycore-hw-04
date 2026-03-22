@@ -13,11 +13,14 @@ from salary_utils import total_salary
 
 
 def main() -> None:
-    total, average = total_salary("salaries.txt")
-    print(
-        f"Загальна сума заробітної плати: {total}, "
-        f"Середня заробітна плата: {average}"
-    )
+    try:
+        total, average = total_salary("salaries.txt")
+        print(
+            f"Загальна сума заробітної плати: {total}, "
+            f"Середня заробітна плата: {average}"
+        )
+    except (FileNotFoundError, ValueError) as error:
+        print(error)
 
 
 if __name__ == "__main__":
