@@ -3,7 +3,7 @@
 
 """
 
-from contacts import ContactsBook
+from contacts import add_contact, change_contact, show_all, show_phone
 
 
 def parse_input(user_input: str) -> tuple[str, list[str]]:
@@ -17,9 +17,29 @@ def parse_input(user_input: str) -> tuple[str, list[str]]:
     return command, args
 
 
+def handle_command(command: str, args: list[str], contacts: dict[str, str]) -> str:
+    """Повертає результат виконання команди."""
+    if command == "hello":
+        return "\nЯк я можу допомогти?"
+
+    if command == "add":
+        return add_contact(args, contacts)
+
+    if command == "change":
+        return change_contact(args, contacts)
+
+    if command == "phone":
+        return show_phone(args, contacts)
+
+    if command == "all":
+        return show_all(contacts)
+
+    return "\nНевідома команда."
+
+
 def main() -> None:
     """Запускає бота в інтерактивному режимі."""
-    book = ContactsBook()
+    contacts: dict[str, str] = {}
 
     print("\nПривіт, ласкаво просимо до персонального асистента!")
 
@@ -28,41 +48,10 @@ def main() -> None:
         command, args = parse_input(user_input)
 
         if command in {"close", "exit"}:
-            print("До побачення!")
+            print("\nДо побачення!")
             break
 
-        if command == "hello":
-            print("Як я можу допомогти?")
-            continue
-
-        if command == "add":
-            if len(args) != 2:
-                print("Використовуйте: add <name> <phone>")
-                continue
-            name, phone = args
-            print(book.add(name, phone))
-            continue
-
-        if command == "change":
-            if len(args) != 2:
-                print("Використовуйте: change <name> <phone>")
-                continue
-            name, phone = args
-            print(book.change(name, phone))
-            continue
-
-        if command == "phone":
-            if len(args) != 1:
-                print("Використовуйте: phone <name>")
-                continue
-            print(book.phone(args[0]))
-            continue
-
-        if command == "all":
-            print(book.show_all())
-            continue
-
-        print("Невідома команда.")
+        print(handle_command(command, args, contacts))
 
 
 if __name__ == "__main__":

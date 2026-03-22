@@ -1,43 +1,70 @@
 """
-Логіка роботи з контактами для Завдання 4.
-У цьому файлі реалізовано клас ContactsBook, який містить методи для
-додавання, зміни, отримання та показу контактів.
+Функції для роботи з контактами.
 """
 
 from typing import Dict
 
-from prettytable import PrettyTable
+
+def add_contact(args: list[str], contacts: Dict[str, str]) -> str:
+    """Додає контакт до словника."""
+    if len(args) != 2:
+        return "Використовуйте: add <name> <phone>"
+
+    name, phone = args
+    contacts[name.lower()] = phone
+    return "Контакт додано."
 
 
-class ContactsBook:
-    def __init__(self) -> None:
-        self.data: Dict[str, str] = {}
+def change_contact(args: list[str], contacts: Dict[str, str]) -> str:
+    """Оновлює номер телефону для наявного контакту."""
+    if len(args) != 2:
+        return "Використовуйте: change <name> <phone>"
 
-    def add(self, name: str, phone: str) -> str:
-        """Додає/перезаписує контакт."""
-        self.data[name.lower()] = phone
-        return "Контакт додано."
+    name, phone = args
+    normalized_name = name.lower()
 
-    def change(self, name: str, phone: str) -> str:
-        """Змінює телефон для контакту."""
-        if name.lower() in self.data:
-            self.data[name.lower()] = phone
-            return "Контакт оновлено."
+    if normalized_name not in contacts:
         return "Контакт не знайдено."
 
-    def phone(self, name: str) -> str:
-        """Повертає телефон за ім'ям."""
-        return self.data.get(name.lower(), "Контакт не знайдено.")
+    contacts[normalized_name] = phone
+    return "Контакт оновлено."
 
-    def show_all(self) -> str:
-        """Повертає всі контакти у вигляді таблиці."""
-        if not self.data:
-            return "Контактів не збережено."
 
-        table = PrettyTable()
-        table.field_names = ["Ім'я", "Телефон"]
+def show_phone(args: list[str], contacts: Dict[str, str]) -> str:
+    """Повертає телефон контакту за ім'ям."""
+    if len(args) != 1:
+        return "Використовуйте: phone <name>"
 
-        for name, phone in self.data.items():
-            table.add_row([name.capitalize(), phone])
+    name = args[0].lower()
+    return contacts.get(name, "Контакт не знайдено.")
 
-        return table.get_string()
+
+def show_all(contacts: Dict[str, str]) -> str:
+    """Повертає всі контакти у вигляді таблиці."""
+    if not contacts:
+        return "Контактів не збережено."
+
+    name_header = "Ім'я"
+    phone_header = "Телефон"
+    formatted_contacts = [
+        (name.capitalize(), phone) for name, phone in contacts.items()
+    ]
+
+    name_width = max(len(name_header), *(len(name) for name, _ in formatted_contacts))
+    phone_width = max(
+        len(phone_header),
+        *(len(phone) for _, phone in formatted_contacts),
+    )
+
+    border = f"+-{'-' * name_width}-+-{'-' * phone_width}-+"
+    header = (
+        f"| {name_header.ljust(name_width)} | "
+        f"{phone_header.ljust(phone_width)} |"
+    )
+
+    lines = [border, header, border]
+    for name, phone in formatted_contacts:
+        lines.append(f"| {name.ljust(name_width)} | {phone.ljust(phone_width)} |")
+
+    lines.append(border)
+    return "\n".join(lines)
